@@ -1,8 +1,8 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # German Competition MCP — multi-stage Dockerfile
 # ─────────────────────────────────────────────────────────────────────────────
-# Build:  docker build -t german-competition-mcp .
-# Run:    docker run --rm -p 3000:3000 german-competition-mcp
+# Build:  docker build -t irish-competition-mcp .
+# Run:    docker run --rm -p 3000:3000 irish-competition-mcp
 #
 # The image expects a pre-built database at /app/data/bundeskartellamt.db.
 # Override with BKARTA_DB_PATH for a custom location.
