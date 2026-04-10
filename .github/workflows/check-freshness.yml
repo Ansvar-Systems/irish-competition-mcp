@@ -1,0 +1,50 @@
+name: Check Data Freshness
+
+on:
+  schedule:
+    # Run weekly on Monday at 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check-freshness:
+    name: Check CCPC data freshness
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Check ingest state
+        id: freshness
+        run: |
+          if [ -f data/ingest-state.json ]; then
+            LAST_RUN=$(node -e "const s=require('./data/ingest-state.json'); console.log(s.last_run || s.last_updated || 'unknown')")
+            echo "last_run=$LAST_RUN" >> "$GITHUB_OUTPUT"
+            echo "Data last ingested: $LAST_RUN"
+          else
+            echo "last_run=never" >> "$GITHUB_OUTPUT"
+            echo "No ingest-state.json found — data has never been ingested."
+          fi
+
+      - name: Report freshness
+        run: |
+          echo "## Data Freshness Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Source | CCPC (https://www.ccpc.ie/) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Last ingest | ${{ steps.freshness.outputs.last_run }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Check date | $(date -u +%Y-%m-%d) |" >> "$GITHUB_STEP_SUMMARY"

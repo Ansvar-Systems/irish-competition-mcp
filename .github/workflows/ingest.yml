@@ -1,0 +1,58 @@
+name: Ingest CCPC Data
+
+on:
+  schedule:
+    # Run weekly on Sunday at 02:00 UTC
+    - cron: "0 2 * * 0"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force re-ingest even if data is fresh"
+        required: false
+        default: "false"
+        type: boolean
+
+jobs:
+  ingest:
+    name: Ingest CCPC decisions and mergers
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run ingestion
+        run: npm run ingest
+        env:
+          CCPC_DB_PATH: data/ccpc.db
+          FORCE_INGEST: ${{ inputs.force || 'false' }}
+
+      - name: Commit updated ingest state
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update CCPC ingest state [skip ci]"
+          file_pattern: "data/ingest-state.json"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+
+      - name: Report ingest results
+        run: |
+          echo "## Ingest Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f data/ingest-state.json ]; then
+            LAST_RUN=$(node -e "const s=require('./data/ingest-state.json'); console.log(s.last_run || s.last_updated || 'unknown')")
+            echo "Ingest completed. Last run: $LAST_RUN" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Ingest state file not found after run." >> "$GITHUB_STEP_SUMMARY"
+          fi

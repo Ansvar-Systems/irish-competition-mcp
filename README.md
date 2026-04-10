@@ -4,7 +4,7 @@
 
 [![npm version](https://badge.fury.io/js/%40ansvar%2Firish-competition-mcp.svg)](https://www.npmjs.com/package/@ansvar/irish-competition-mcp)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CI](https://github.com/Ansvar-Systems/irish-competition-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Ansvar-Systems/irish-competition-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/Ansvar-Systems/irish-competition-mcp/actions/workflows/ghcr-build.yml/badge.svg)](https://github.com/Ansvar-Systems/irish-competition-mcp/actions/workflows/ghcr-build.yml)
 
 Query Irish competition data -- regulations, decisions, and requirements from CCPC (Competition and Consumer Protection Commission) -- directly from Claude, Cursor, or any MCP-compatible client.
 
@@ -96,7 +96,7 @@ npx @ansvar/irish-competition-mcp
 |------|-------------|
 | `ie_comp_search_decisions` | Full-text search across CCPC enforcement decisions (abuse of dominance, cartel, sector inquiries). Returns matching d... |
 | `ie_comp_get_decision` | Get a specific CCPC decision by case number (e.g., |
-| `ie_comp_search_mergers` | Search CCPC merger control decisions (Fusionskontrolle). Returns merger cases with acquiring party, target, sector, a... |
+| `ie_comp_search_mergers` | Search CCPC merger control decisions. Returns merger cases with acquiring party, target, sector, and outcome. |
 | `ie_comp_get_merger` | Get a specific merger control decision by case number (e.g., |
 | `ie_comp_list_sectors` | List all sectors with CCPC enforcement activity, including decision counts and merger counts per sector. |
 | `ie_comp_about` | Return metadata about this MCP server: version, data source, coverage, and tool list. |
